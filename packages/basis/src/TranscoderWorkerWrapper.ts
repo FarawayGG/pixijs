@@ -161,8 +161,8 @@ export function TranscoderWorkerWrapper(): void
                     const height = basisFile.getImageHeight(i, j);
                     const byteSize = basisFile.getImageTranscodedSizeInBytes(i, j, format);
 
-                    const alignedWidth = (width + 3) & ~3;
-                    const alignedHeight = (height + 3) & ~3;
+                    const alignedWidth = width;
+                    const alignedHeight = height;
 
                     // Level 0 is texture's actual width, height
                     if (j === 0)

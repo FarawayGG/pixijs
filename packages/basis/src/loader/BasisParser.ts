@@ -206,8 +206,8 @@ export class BasisParser
             const levels = !fallbackMode ? basisFile.getNumLevels(i) : 1;
             const width = basisFile.getImageWidth(i, 0);
             const height = basisFile.getImageHeight(i, 0);
-            const alignedWidth = (width + 3) & ~3;
-            const alignedHeight = (height + 3) & ~3;
+            const alignedWidth = width;
+            const alignedHeight = height;
 
             const imageLevels = new Array<CompressedLevelBuffer>(levels);
 
