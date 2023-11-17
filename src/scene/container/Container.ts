@@ -57,6 +57,19 @@ export const UPDATE_BLEND = 0b0010;
 export const UPDATE_VISIBLE = 0b0100;
 export const UPDATE_TRANSFORM = 0b1000;
 
+export interface TransformOptions
+{
+    x: number;
+    y: number;
+    scaleX: number;
+    scaleY: number;
+    rotation: number;
+    skewX: number;
+    skewY: number;
+    pivotX: number;
+    pivotY: number;
+}
+
 /**
  * Constructor options use for Container instances.
  * @see Container
@@ -103,7 +116,7 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
 
 export interface Container
     extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents & AnyEvent>>,
-    EventEmitter<ContainerEvents & AnyEvent> {}
+    EventEmitter<ContainerEvents & AnyEvent> { }
 
 export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
 {
@@ -657,6 +670,42 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._sy = Math.cos(rotation - skew._x); // sin, added PI/2
     }
 
+    /**
+     * Updates the transform properties of the container (accepts partial values).
+     * @param {object} opts - The options for updating the transform.
+     * @param {number} opts.x - The x position of the container.
+     * @param {number} opts.y - The y position of the container.
+     * @param {number} opts.scaleX - The scale factor on the x-axis.
+     * @param {number} opts.scaleY - The scale factor on the y-axis.
+     * @param {number} opts.rotation - The rotation of the container, in radians.
+     * @param {number} opts.skewX - The skew factor on the x-axis.
+     * @param {number} opts.skewY - The skew factor on the y-axis.
+     * @param {number} opts.pivotX - The x coordinate of the pivot point.
+     * @param {number} opts.pivotY - The y coordinate of the pivot point.
+     */
+    public updateTransform(opts: Partial<TransformOptions>): this
+    {
+        this.position.set(
+            typeof opts.x === 'number' ? opts.x : this.position.x,
+            typeof opts.y === 'number' ? opts.y : this.position.y
+        );
+        this.scale.set(
+            typeof opts.scaleX === 'number' ? opts.scaleX || 1 : this.scale.x,
+            typeof opts.scaleY === 'number' ? opts.scaleY || 1 : this.scale.y
+        );
+        this.rotation = typeof opts.rotation === 'number' ? opts.rotation : this.rotation;
+        this.skew.set(
+            typeof opts.skewX === 'number' ? opts.skewX : this.skew.x,
+            typeof opts.skewY === 'number' ? opts.skewY : this.skew.y
+        );
+        this.pivot.set(
+            typeof opts.pivotX === 'number' ? opts.pivotX : this.pivot.x,
+            typeof opts.pivotY === 'number' ? opts.pivotY : this.pivot.y
+        );
+
+        return this;
+    }
+
     /// ///// color related stuff
 
     set alpha(value: number)
@@ -772,9 +821,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     get isRenderable(): boolean
     {
-        const worldAlpha = ((this.layerColor >> 24) & 0xFF);
+        const layerAlpha = ((this.layerColor >> 24) & 0xFF);
 
-        return (this.localVisibleRenderable === 0b11 && worldAlpha > 0);
+        return (this.localVisibleRenderable === 0b11 && layerAlpha > 0);
     }
 
     /**
